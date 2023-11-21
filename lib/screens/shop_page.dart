@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop_app/models/product_model.dart';
+import 'package:shop_app/provider/globalProvider.dart';
 import '../widgets/ProductView.dart';
 import 'dart:convert';
 
@@ -14,7 +16,12 @@ class _ShopPageState extends State<ShopPage> {
 
  Future<List<ProductModel>> _getData()  async {
     String res = await DefaultAssetBundle.of(context).loadString("assets/products.json");
-    return ProductModel.fromList(jsonDecode(res));
+    List<ProductModel> data= ProductModel.fromList(jsonDecode(res));
+    // ignore: use_build_context_synchronously
+    Provider.of<Global_provider>(context, listen: false).setProducts(data);
+    // ignore: use_build_context_synchronously
+    return Provider.of<Global_provider>(context, listen: false).products;
+    
   }
 
   @override
@@ -56,7 +63,7 @@ class _ShopPageState extends State<ShopPage> {
             ),
           );
         } else {
-          return Center(
+          return const Center(
             child: SizedBox(
               height:25,
               width: 25,

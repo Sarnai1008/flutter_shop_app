@@ -38,6 +38,7 @@ dependencies:
   http: ^1.1.0
   dynamic_color: ^1.6.8
   json_annotation: ^4.8.1
+  provider: ^6.1.1
 
 dev_dependencies:
   flutter_test:
