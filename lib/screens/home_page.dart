@@ -1,33 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/provider/globalProvider.dart';
 import 'bags_page.dart';
 import 'shop_page.dart';
 import 'favorite_page.dart';
 import 'profile_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  void setPageindex(int index){
-  setState(() {
-    _currentindex=index;
-  });
-}
-  int _currentindex = 0;
-  List<Widget> Pages = [const ShopPage(), const BagsPage(),const FavoritePage(), const ProfilePage()];
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
+  
+List<Widget> Pages = [const ShopPage(), BagsPage(),const FavoritePage(), const ProfilePage()];
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-      body: Pages[_currentindex],
+    return Consumer<Global_provider>(
+      builder: (context, provider, child) {
+        return Scaffold(
+      body: Pages[provider.currentIdx],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        currentIndex: _currentindex,
-        onTap: setPageindex,
+        currentIndex:provider.currentIdx,
+        onTap: provider.changeCurrentIdx,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.shop),
@@ -43,8 +36,8 @@ class _HomePageState extends State<HomePage> {
             label: 'Profile'),
         ]),
     );
-  }
-  }
+  });
+}}
 
   
 
