@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/product_model.dart';
 import 'package:shop_app/provider/globalProvider.dart';
+import 'package:shop_app/repository/repository.dart';
 import '../widgets/ProductView.dart';
-import 'dart:convert';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -13,65 +13,80 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
+  late Future<List<ProductModel>> _productDataFuture;
 
- Future<List<ProductModel>> _getData()  async {
-    String res = await DefaultAssetBundle.of(context).loadString("assets/products.json");
-    List<ProductModel> data= ProductModel.fromList(jsonDecode(res));
-    // ignore: use_build_context_synchronously
-    Provider.of<Global_provider>(context, listen: false).setProducts(data);
-    // ignore: use_build_context_synchronously
-    return Provider.of<Global_provider>(context, listen: false).products;
-    
+  @override
+  void initState() {
+    super.initState();
+    _productDataFuture = _getProductData();
+  }
+
+  Future<List<ProductModel>> _getProductData() async {
+    try {
+      final provider = Provider.of<Global_provider>(context, listen: false);
+      if (provider.products.isEmpty) {
+        List<ProductModel>? data =
+            await Provider.of<MyRepository>(context, listen: false)
+                .fetchProductData();
+        provider.setProducts(data ?? []);
+      }
+      return provider.products;
+    } catch (e) {
+      throw Exception("Error fetching product data: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _getData(),
-      builder: ((context, snapshot) {
-        if (snapshot.hasData) {
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                const Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Бараанууд",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(223, 37, 37, 37),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Wrap(
-                    spacing: 20,
-                    runSpacing: 10,
-                    children: List.generate(
-                      snapshot.data!.length,
-                      (index) => ProductViewShop(snapshot.data![index]),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
+    return FutureBuilder<List<ProductModel>>(
+      future: _productDataFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
           );
         } else {
-          return const Center(
-            child: SizedBox(
-              height:25,
-              width: 25,
-              child: CircularProgressIndicator(),
+          return Scaffold(
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text(
+                        "Бараанууд",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(223, 37, 37, 37),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Wrap(
+                        spacing: 20,
+                        runSpacing: 10,
+                        children: snapshot.data!
+                            .map((product) => ProductViewShop(product))
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ),
           );
         }
-      }),
+      },
     );
   }
-  }
+}

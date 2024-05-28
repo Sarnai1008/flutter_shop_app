@@ -10,6 +10,7 @@ class ProductModel {
   final String? category;
   final String? image;
   final Rating? rating;
+  final List<Comment?>? comments;
   bool isFavorite;
   int count;
 
@@ -22,17 +23,17 @@ class ProductModel {
     this.category,
     this.image,
     this.rating,
+    this.comments,
     this.count = 1,
   });
 
- 
   ProductModel fromJson(Map<String, dynamic> json) {
     return _$ProductModelFromJson(json);
   }
-  
 
-  static List<ProductModel> fromList(List<dynamic> data) => data.map((e) => ProductModel().fromJson(e)).toList();
-  
+  static List<ProductModel> fromList(List<dynamic> data) =>
+      data.map((e) => ProductModel().fromJson(e)).toList();
+
   Map<String, dynamic> toJson() {
     throw UnimplementedError();
   }
@@ -48,4 +49,14 @@ class Rating {
   factory Rating.fromJson(Map<String, dynamic> json) {
     return _$RatingFromJson(json);
   }
+}
+
+@JsonSerializable(createToJson: false)
+class Comment {
+  int? userId;
+  String? comment;
+  Comment({this.userId, this.comment});
+
+  factory Comment.fromJson(Map<String, dynamic> json) =>
+      _$CommentFromJson(json);
 }

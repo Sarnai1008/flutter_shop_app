@@ -8,36 +8,33 @@ import 'profile_page.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-  
-List<Widget> Pages = [const ShopPage(), BagsPage(),const FavoritePage(), const ProfilePage()];
+
+  List<Widget> Pages = [
+    const ShopPage(),
+    const BagsPage(),
+    const FavoritePage(),
+    const ProfilePage()
+  ];
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Consumer<Global_provider>(
-      builder: (context, provider, child) {
-        return Scaffold(
-      body: Pages[provider.currentIdx],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex:provider.currentIdx,
-        onTap: provider.changeCurrentIdx,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shop),
-            label: 'Shopping'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_basket),
-            label: 'Bag'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'favorite'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile'),
-        ]),
-    );
-  });
-}}
-
-  
-
+    return Consumer<Global_provider>(builder: (context, provider, child) {
+      return Scaffold(
+        body: Pages[provider.currentIdx],
+        bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: provider.currentIdx,
+            onTap: provider.changeCurrentIdx,
+            items: const [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.shop), label: 'Shopping'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.shopping_basket), label: 'Bag'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite), label: 'Favorite'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person), label: 'Profile'),
+            ]),
+      );
+    });
+  }
+}
